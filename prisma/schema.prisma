@@ -1,0 +1,90 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PblSchoolResponse {
+  id                  Int      @id @default(autoincrement())
+  reportingMonth      String   // e.g., "2025-07"
+  timestamp           String
+  schoolName          String
+  schoolCode          String
+  district            String
+  block               String
+  projectConducted    String   // "Yes" or "No"
+  evidenceSubmitted   String   // "Yes" or "No"
+  classesConducted    String   // e.g., "Classes 6, 7 and 8"
+  subjectTaught       String   // e.g., "Math and Science"
+  
+  // Enrollment and Attendance Data
+  class6Enrollment    Int
+  class6SciAttendance Int
+  class6MathAttendance Int
+  
+  class7Enrollment    Int
+  class7SciAttendance Int
+  class7MathAttendance Int
+  
+  class8Enrollment    Int
+  class8SciAttendance Int
+  class8MathAttendance Int
+
+  // Pre-calculated Derived Fields from CSV
+  totalEnrollment     Int
+  totalAttendance     Int
+  attendanceRate      Float
+  riskStatus          String   // "On Track", "Behind", "At Risk", "Critical"
+
+  @@index([reportingMonth])
+  @@index([district])
+  @@index([block])
+}
+
+model GrantFinance {
+  id                  Int      @id @default(autoincrement())
+  grantId             String
+  grantName           String
+  reportingMonth      String
+  budgetLine          String
+  approvedUnits       Int
+  monthlyUtilized     Int
+  cumulativeUtilized  Int
+  utilizationRate     Float
+  financeNote         String
+
+  @@index([grantId, reportingMonth])
+}
+
+model GrantPerformance {
+  id                     Int      @id @default(autoincrement())
+  grantId                String
+  grantName              String
+  reportingMonth         String
+  reportStatus           String
+  pblCompletionRate      Float
+  evidenceSubmissionRate Float
+  attendanceRate         Float
+  riskStatus             String
+  milestoneSummary       String
+  draftReportText        String
+
+  @@index([grantId, reportingMonth])
+}
+
+model GrantMedia {
+  id              Int      @id @default(autoincrement())
+  recordId        String
+  recordType      String   // "image" or "news_clipping"
+  grantId         String
+  reportingMonth  String
+  title           String
+  summary         String
+  fileName        String
+  relativePath    String   // e.g., "images/photo.png"
+
+  @@index([grantId, reportingMonth])
+}
